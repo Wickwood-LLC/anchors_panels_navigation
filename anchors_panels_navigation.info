@@ -1,0 +1,6 @@
+name = Anchors panels navigation
+description = Add anchors to the panels to allow better navigation into one page.
+core = 7.x
+package = "Panels"
+dependencies[] = ctools (>=1.4)
+dependencies[] = panels (>=3)

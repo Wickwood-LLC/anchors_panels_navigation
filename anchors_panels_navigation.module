@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Main file of Anchors Panels Navigation module.
+ */
+
+/**
+ * Implements hook_preprocess_panels_pane().
+ */
+function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
+  $hashes = array();
+  if (isset($variables['pane'] -> css['css_id'])) {
+    $hashes[] = $variables['pane'] -> css['css_id'];
+    drupal_add_js(drupal_get_path("module", "anchors_panels_navigation") . "/anchors_panels_navigation.js");
+    $variables['pane_prefix'] = '<a name="' . $variables['pane']->css['css_id'] . '"></a>' . $variables['pane_prefix'];
+    drupal_add_js(array('anchors_panels_navigation' => array('hashes' => $hashes,
+      'classes_remove' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_remove', 'active-trail active'),
+      'classes_set' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_set', 'active'),
+      'fix_panel_height' => variable_get('anchors_panels_navigation_' . arg(1) . '_fix_panel_height', FALSE),
+    )), 'setting');
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'panel_node_form') { // implement Anchors Panels Navigation Settings fieldset for Panel content type only
+    $form['anchors_panels_navigation'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Anchors Panels Navigation Settings'),
+      '#weight' => 10,
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['anchors_panels_navigation']['fix_panel_height'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Panel height should be more that screen height.'),
+      '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_fix_panel_height', FALSE),
+    );
+    $form['anchors_panels_navigation']['classes_remove'] = array(
+      '#title' => t('Classes to remove'),
+      '#type' => 'textfield',
+      '#description' => t('List of classes that should be removed in the links to inactive anchors.'),
+      '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_classes_remove', 'active-trail active'),
+    );
+    $form['anchors_panels_navigation']['classes_set'] = array(
+      '#title' => t('Classes to set'),
+      '#type' => 'textfield',
+      '#description' => t('List of classes that should be set to the active anchor link.'),
+      '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_classes_set', 'active'),
+    );
+    $form['#submit'][] = 'anchors_panels_navigation_form_submit';
+  }
+}
+
+/**
+ * Save this module settings for current panels node.
+ */
+function anchors_panels_navigation_form_submit($form, &$form_state) {
+  if (isset($form_state['values']['fix_panel_height'])) {
+    variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_fix_panel_height', $form_state['values']['fix_panel_height']);
+  }
+  if (isset($form_state['values']['classes_remove'])) {
+    variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_classes_remove', $form_state['values']['classes_remove']);
+  }
+  if (isset($form_state['values']['classes_set'])) {
+    variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_classes_set', $form_state['values']['classes_set']);
+  }
+}

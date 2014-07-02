@@ -1,4 +1,3 @@
-var anchors_panels_navigation_scroll_flag = true;
 (function($){
 $(document).ready(function() {
   if(Drupal.settings.anchors_panels_navigation.fix_panel_height) {
@@ -11,34 +10,31 @@ $(document).ready(function() {
   if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
     anchors_panels_navigation_classes_fix(hash);	  
   }
-  $(window).scroll(function(){
-  if(anchors_panels_navigation_scroll_flag) {
-    var scrollY = (window.scrollY) ? window.scrollY : document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop; // thanks to Alexandr Zykov
-	//console.log(scrollY);
-	var height = 0;
-    Drupal.settings.anchors_panels_navigation.hashes.forEach(function(entry) {
-      var aTop = $('#' + entry).offset().top;
-	  if(scrollY >= aTop && height <= aTop){
-	    height = aTop;
-		hash = entry; 
-	}
-  });
-  window.location.hash = "#" + hash;
-  anchors_panels_navigation_classes_fix(hash);
-  }
-  });
-  $("a").click(function(){
-		anchors_panels_navigation_scroll_flag = false;
+
+$(window).bind('scroll', function(e){
+    $('div.panel-pane').each(function(){
+        if ($(this).offset().top < window.pageYOffset + 1 //begins before top
+        && $(this).offset().top + $(this).height() > window.pageYOffset + 1 //but ends in visible area
+        ){
+			var hash = $(this).attr('id');
+            window.location.hash = hash;
+			anchors_panels_navigation_classes_fix(hash);
+			//$(window).unbind('scroll');
+        }
+    });
+});
+
+	$("a").click(function(event){
 		//check if it has a hash (i.e. if it's an anchor link)
 		if(this.hash){
 			var hash = this.hash.substr(1);	
 			//console.log($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes));
 			if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
+				event.preventDefault();
 				var destination = $("#" + hash).offset().top;
 				$("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, 500, function() {
-					window.location.hash = "#" + hash;
-					anchors_panels_navigation_classes_fix(hash);
-					setTimeout('anchors_panels_navigation_scroll_flag = true', 2000);
+				//	window.location.hash = "#" + hash;
+				//	anchors_panels_navigation_classes_fix(hash);
 					return false;
 				});
 			}

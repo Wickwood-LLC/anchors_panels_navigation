@@ -1,7 +1,8 @@
 name = Anchors panels navigation
-description = Add anchors to the panels to allow better navigation into one page.
+description = Add user predefined anchors to the panels to provide better navigation into one page or on so called Landing Pages. 
 core = 7.x
 package = "Panels"
 dependencies[] = ctools (>=1.4)
 dependencies[] = panels (>=3)
-dependencies[] = panels_node
+dependencies[] = libraries (>=2)
+dependencies[] = jquery_update (>=2)

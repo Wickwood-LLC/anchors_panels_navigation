@@ -19,6 +19,7 @@ function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
       'classes_set' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_set', 'active'),
       'fix_panel_height' => variable_get('anchors_panels_navigation_' . arg(1) . '_fix_panel_height', FALSE),
     )), 'setting');
+    libraries_load('appear');
   }
 }
 
@@ -68,4 +69,48 @@ function anchors_panels_navigation_form_submit($form, &$form_state) {
   if (isset($form_state['values']['classes_set'])) {
     variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_classes_set', $form_state['values']['classes_set']);
   }
+}
+
+/**
+ * Implements hook_libraries_info() of Libraries API module.
+ */
+function anchors_panels_navigation_libraries_info() {
+  $libraries = array();
+  $libraries['appear'] = array(
+    'name' => 'jQuery.appear',
+    'vendor url' => 'https://github.com/morr/jquery.appear',
+    'download url' => 'https://github.com/morr/jquery.appear',
+    'version arguments' => array(
+      'file' => 'jquery.appear.js',
+      'pattern' => '/Version: (\d+\.+\d+\.+\d+)/',
+      'lines' => 9,
+    ),
+    'files' => array(
+      'js' => array('jquery.appear.js'),
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Implements hook_libraries_info() of Libraries API module.
+ */
+function anchors_panels_navigation_requirements($phase) {
+  $requirements = array();
+  if ($phase == 'runtime') {
+    $anchors_panels_navigation_appear = libraries_detect('appear');
+    $requirements ['appear'] = array(
+      'title' => t('jQuery.appear'),
+      'weight' => 100
+    );
+    if ($anchors_panels_navigation_appear['installed']) {
+      $requirements ['appear']['value'] = $anchors_panels_navigation_appear['version'];
+      $requirements ['appear']['severity'] = REQUIREMENT_OK;
+    }
+    else {
+      $requirements ['appear']['value'] = t('Please install jQuery.appear library. See more information and instructions in README.txt or on the project page <a href="https://www.drupal.org/project/anchors_panels_navigation" target="_blank">https://www.drupal.org/project/anchors_panels_navigation</a>');
+      $requirements ['appear']['severity'] = REQUIREMENT_ERROR;
+    }
+  }
+  return $requirements;
 }

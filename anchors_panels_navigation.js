@@ -5,14 +5,16 @@
 var old_hash = window.location.hash;
 (function($){
 $(document).ready(function() {
+  var top_offset = Drupal.settings.anchors_panels_navigation.top_offset;  
+  console.log(top_offset);
   if(Drupal.settings.anchors_panels_navigation.fix_panel_height) {
     var window_height = $(window).height();
     Drupal.settings.anchors_panels_navigation.hashes.forEach(function(entry) {
       $('#' + entry).css('min-height', window_height);
     });
   }	
-  var hash = window.location.hash.substr(1);	
-  
+  var hash = window.location.hash.substr(1);
+
   if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
     anchors_panels_navigation_classes_fix(hash);	  
   }
@@ -24,7 +26,7 @@ $(document).ready(function() {
     var hash = $(this).attr('id');
     var offset = $(this).offset().top - $(window).scrollTop();
 
-    if(old_hash != hash && offset > 0 && offset < previos_object_height) {
+    if(old_hash != hash && offset > top_offset - 1 && offset < previos_object_height) {
       old_hash = hash;
       previos_object_height = $(this).height();
       anchors_panels_navigation_classes_fix(hash);
@@ -40,7 +42,7 @@ $(document).ready(function() {
 			var hash = this.hash.substr(1);	
 			if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
 				event.preventDefault();
-				var destination = $("#" + hash).offset().top;
+				var destination = $("#" + hash).offset().top - top_offset;
 				$("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, 500, function() {
 					return false;
 				});

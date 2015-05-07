@@ -18,6 +18,7 @@ function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
       'classes_remove' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_remove', 'active-trail active'),
       'classes_set' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_set', 'active'),
       'fix_panel_height' => variable_get('anchors_panels_navigation_' . arg(1) . '_fix_panel_height', FALSE),
+      'top_offset' => variable_get('anchors_panels_navigation_' . arg(1) . '_top_offset', 0),
     )), 'setting');
     libraries_load('appear');
   }
@@ -37,9 +38,15 @@ function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
     );
     $form['anchors_panels_navigation']['fix_panel_height'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Panel height should be more that screen height.'),
+      '#title' => t('Panel height should be more than screen height.'),
       '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_fix_panel_height', FALSE),
     );
+    $form['anchors_panels_navigation']['top_offset'] = array(
+      '#title' => t('Top offset'),
+      '#type' => 'textfield',
+      '#description' => t('Vertical offset for each panel where script will scroll and where script will change anchors in address string according browser window. It is zero by default.'),
+      '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_top_offset', 0),
+    );    
     $form['anchors_panels_navigation']['classes_remove'] = array(
       '#title' => t('Classes to remove'),
       '#type' => 'textfield',
@@ -56,10 +63,15 @@ function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
   }
 }
 
+/* TODO validation of Top offset setting! */
+
 /**
  * Save this module settings for current panels node.
  */
 function anchors_panels_navigation_form_submit($form, &$form_state) {
+  if (isset($form_state['values']['top_offset'])) {
+    variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_top_offset', $form_state['values']['top_offset']);
+  }  
   if (isset($form_state['values']['fix_panel_height'])) {
     variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_fix_panel_height', $form_state['values']['fix_panel_height']);
   }

@@ -6,7 +6,6 @@ var old_hash = window.location.hash;
 (function($){
 $(document).ready(function() {
   var top_offset = Drupal.settings.anchors_panels_navigation.top_offset;  
-  console.log(top_offset);
   if(Drupal.settings.anchors_panels_navigation.fix_panel_height) {
     var window_height = $(window).height();
     Drupal.settings.anchors_panels_navigation.hashes.forEach(function(entry) {
@@ -14,7 +13,12 @@ $(document).ready(function() {
     });
   }	
   var hash = window.location.hash.substr(1);
-
+  if(hash){
+    var destination = $("#" + hash).offset().top - top_offset;
+    $("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, 500, function() {
+      return false;
+    });
+  }
   if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
     anchors_panels_navigation_classes_fix(hash);	  
   }

@@ -14,6 +14,9 @@ function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
     $hashes[] = $variables['pane'] -> css['css_id'];
     drupal_add_js(drupal_get_path("module", "anchors_panels_navigation") . "/anchors_panels_navigation.js");
     $variables['pane_prefix'] = '<a name="' . $variables['pane']->css['css_id'] . '"></a>' . $variables['pane_prefix'];
+// I'm thinking about wrapper, but not sure that it is really needed...    
+//    $variables['pane_prefix'] = '<div class="anchors-panels-navigation-wrapper" style="margin-top: ' . variable_get('anchors_panels_navigation_' . arg(1) . '_top_offset', 0) . 'px;"><a name="' . $variables['pane']->css['css_id'] . '"></a>' . $variables['pane_prefix'];
+//    $variables['pane_suffix'] = $variables['pane_suffix'] . '</div>'; 
     drupal_add_js(array('anchors_panels_navigation' => array('hashes' => $hashes,
       'classes_remove' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_remove', 'active-trail active'),
       'classes_set' => variable_get('anchors_panels_navigation_' . arg(1) . '_classes_set', 'active'),
@@ -60,10 +63,18 @@ function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
       '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_classes_set', 'active'),
     );
     $form['#submit'][] = 'anchors_panels_navigation_form_submit';
+    $form['#validate'][] = 'anchors_panels_navigation_form_validate';
   }
 }
 
-/* TODO validation of Top offset setting! */
+/**
+ * Validate Top offset value.
+ */
+function anchors_panels_navigation_form_validate($form, &$form_state) {
+  if (!is_numeric($form_state['values']['top_offset'])) {
+    form_set_error('top_offset', t('Top offset must be numeric!'));
+  }
+}
 
 /**
  * Save this module settings for current panels node.

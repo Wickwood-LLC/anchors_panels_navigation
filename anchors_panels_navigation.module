@@ -31,7 +31,7 @@ function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
  * Implements hook_form_alter().
  */
 function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
-  if ($form_id == 'panel_node_form') { // implement Anchors Panels Navigation Settings fieldset for Panel content type only
+  if ($form_id == 'panel_node_form') {
     $form['anchors_panels_navigation'] = array(
       '#type' => 'fieldset',
       '#title' => t('Anchors Panels Navigation Settings'),
@@ -49,7 +49,7 @@ function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'textfield',
       '#description' => t('Vertical offset for each panel where script will scroll and where script will change anchors in address string according browser window. It is zero by default.'),
       '#default_value' => variable_get('anchors_panels_navigation_' . $form['nid']['#value'] . '_top_offset', 0),
-    );    
+    );
     $form['anchors_panels_navigation']['classes_remove'] = array(
       '#title' => t('Classes to remove'),
       '#type' => 'textfield',
@@ -64,6 +64,23 @@ function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
     );
     $form['#submit'][] = 'anchors_panels_navigation_form_submit';
     $form['#validate'][] = 'anchors_panels_navigation_form_validate';
+  }
+  elseif ($form_id == 'ctools_entity_field_content_type_formatter_options') {
+    // Panelizer form.
+    $form['anchors_panels_navigation'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Anchors Panels Navigation Settings'),
+      '#weight' => 10,
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+    );
+    $form['anchors_panels_navigation']['anchors_panels_navigation_anchor'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Anchor Title'),
+      '#description' => t('If you are using the "Automatic Anchor Menu" this panel will show up in that menu automatically. Insert the human-readable title for this pane here. Leave this blank for no anchor.'),
+      '#default_value' => isset($form_state['conf']['anchors_panels_navigation_anchor']) ? $form_state['conf']['anchors_panels_navigation_anchor'] : '',
+    );
+    $form['#submit'][] = 'anchors_panels_navigation_pane_form_submit';
   }
 }
 
@@ -82,7 +99,7 @@ function anchors_panels_navigation_form_validate($form, &$form_state) {
 function anchors_panels_navigation_form_submit($form, &$form_state) {
   if (isset($form_state['values']['top_offset'])) {
     variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_top_offset', $form_state['values']['top_offset']);
-  }  
+  }
   if (isset($form_state['values']['fix_panel_height'])) {
     variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_fix_panel_height', $form_state['values']['fix_panel_height']);
   }
@@ -91,6 +108,16 @@ function anchors_panels_navigation_form_submit($form, &$form_state) {
   }
   if (isset($form_state['values']['classes_set'])) {
     variable_set('anchors_panels_navigation_' . $form_state['values']['nid'] . '_classes_set', $form_state['values']['classes_set']);
+  }
+}
+
+/**
+ * @param $form
+ * @param $form_state
+ */
+function anchors_panels_navigation_pane_form_submit($form, &$form_state) {
+  if (isset($form_state['values']['anchors_panels_navigation_anchor'])) {
+    $form_state['conf']['anchors_panels_navigation_anchor'] = $form_state['values']['anchors_panels_navigation_anchor'];
   }
 }
 
@@ -136,4 +163,68 @@ function anchors_panels_navigation_requirements($phase) {
     }
   }
   return $requirements;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function anchors_panels_navigation_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+/**
+ * Inject anchors for panels that have been configured to do so.
+ *
+ * Implements hook_panels_pane_content_alter().
+ *
+ * @param $content
+ * @param $pane
+ * @param $args
+ * @param $contexts
+ */
+function anchors_panels_navigation_panels_pane_content_alter(&$content, $pane, $args, $contexts) {
+  if (
+    is_object($content)
+    && !empty($content->content)
+    && !empty($content->content['#title'])
+    && !empty($pane->configuration['anchors_panels_navigation_anchor'])
+  ) {
+    // Generate a machine name based on the pane title.
+    $anchor_title = $pane->configuration['anchors_panels_navigation_anchor'];
+    $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);
+    $anchor = '<a name="' . $anchor_name . '"></a>';
+
+    // Prepend the first existing markup item or add one if not present.
+    $markup_found = FALSE;
+    foreach ($content->content as &$item) {
+      if (
+        is_array($item)
+        && isset($item['#markup'])
+      ) {
+        $item['#markup'] = $anchor . $item['#markup'];
+        $markup_found = TRUE;
+        break;
+      }
+    }
+    if (!$markup_found) {
+      $content->content[] = array(
+        '#markup' => $anchor,
+      );
+    }
+  }
+}
+
+/**
+ * Generate a machine name for use in anchor names.
+ *
+ * @param string $string
+ *    Feed in a title or any string.
+ *
+ * @return string
+ *    Returns a safe anchor name.
+ */
+function _anchors_panels_navigation_anchor_name($string) {
+  return preg_replace('@[^a-z0-9-]+@', '-', strtolower($string));
 }

@@ -32,7 +32,7 @@ function anchors_panels_navigation_auto_render($subtype, $conf, $args, $contexts
     // Use absolute paths and "external" links so that menu handlers behave.
     $request_path = request_path();
     $request_path_absolute = $GLOBALS['base_url'] . (!empty($request_path) ? '/' . $request_path : '');
-    foreach ($panes as $pane) {
+    foreach ($panes as $pid => $pane) {
       // Ignore the current pane, find ones configured to be anchored.
       if (
         $pane->type != 'anchors_panels_navigation_auto'
@@ -41,7 +41,7 @@ function anchors_panels_navigation_auto_render($subtype, $conf, $args, $contexts
       ) {
         $anchor_title = $pane->configuration['anchors_panels_navigation_anchor'];
         $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);
-        $menu_tree[$count . ' ' . $anchor_title . ' ' . $pane->did] = array(
+        $menu_tree[$count . ' ' . $anchor_title . ' ' . $pid] = array(
           'link' => array(
             'access' => TRUE,
             'expanded' => '1',

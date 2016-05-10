@@ -65,7 +65,10 @@ function anchors_panels_navigation_form_alter(&$form, &$form_state, $form_id) {
     $form['#submit'][] = 'anchors_panels_navigation_form_submit';
     $form['#validate'][] = 'anchors_panels_navigation_form_validate';
   }
-  elseif ($form_id == 'ctools_entity_field_content_type_formatter_options') {
+  elseif (
+    $form_id == 'ctools_entity_field_content_type_formatter_options'
+    || $form_id == 'views_content_views_panes_content_type_edit_form'
+  ) {
     // Panelizer form.
     $form['anchors_panels_navigation'] = array(
       '#type' => 'fieldset',
@@ -188,7 +191,6 @@ function anchors_panels_navigation_panels_pane_content_alter(&$content, $pane, $
   if (
     is_object($content)
     && !empty($content->content)
-    && !empty($content->content['#title'])
     && !empty($pane->configuration['anchors_panels_navigation_anchor'])
   ) {
     // Generate a machine name based on the pane title.
@@ -197,23 +199,41 @@ function anchors_panels_navigation_panels_pane_content_alter(&$content, $pane, $
     $anchor = '<a name="' . $anchor_name . '"></a>';
 
     // Prepend the first existing markup item or add one if not present.
-    $markup_found = FALSE;
-    foreach ($content->content as &$item) {
-      if (
-        is_array($item)
-        && isset($item['#markup'])
-      ) {
-        $item['#markup'] = $anchor . $item['#markup'];
-        $markup_found = TRUE;
-        break;
-      }
+    $inserted = _anchors_panels_navigation_insert_anchor($content->content, $anchor);
+    if (!$inserted) {
+      $content->content['#markup'] = $anchor;
     }
-    if (!$markup_found) {
-      $content->content[] = array(
-        '#markup' => $anchor,
-      );
+
+  }
+}
+
+/**
+ * Insert the anchor tag on the first #markup found.
+ *
+ * Return TRUE if successful.
+ *
+ * @param array  $content
+ * @param string $anchor
+ * @return bool
+ */
+function _anchors_panels_navigation_insert_anchor(&$content, $anchor) {
+  $inserted = FALSE;
+  foreach ($content as $key => &$item) {
+    if ($key == '#contextual_links') {
+      break;
+    }
+    if (is_array($item)) {
+      $inserted = _anchors_panels_navigation_insert_anchor($item, $anchor);
+    }
+    elseif ($key == '#markup') {
+      $item = $anchor . $item;
+      $inserted = TRUE;
+    }
+    if ($inserted) {
+      break;
     }
   }
+  return $inserted;
 }
 
 /**

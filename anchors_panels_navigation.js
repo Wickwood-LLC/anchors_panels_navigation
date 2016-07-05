@@ -14,10 +14,13 @@ $(document).ready(function() {
   }	
   var hash = window.location.hash.substr(1);
   if(hash){
-    var destination = $("#" + hash).offset().top - top_offset;
-    $("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, 500, function() {
-      return false;
-    });
+    var $hashobj = $("#" + hash);
+    if ($hashobj.length) {
+      var destination = $hashobj.offset().top - top_offset;
+      $("html:not(:animated),body:not(:animated)").animate({scrollTop: destination}, 500, function () {
+        return false;
+      });
+    }
   }
   if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
     anchors_panels_navigation_classes_fix(hash);	  
@@ -28,14 +31,16 @@ $(document).ready(function() {
   $(document.body).on('appear', '.panel-pane', function(e, $affected) {
 
     var hash = $(this).attr('id');
-    var offset = $(this).offset().top - $(window).scrollTop();
+    if (hash) {
+      var offset = $(this).offset().top - $(window).scrollTop();
 
-    if(old_hash != hash && offset > top_offset - 1 && offset < previos_object_height) {
-      old_hash = hash;
-      previos_object_height = $(this).height();
-      anchors_panels_navigation_classes_fix(hash);
-      var stateObj = { foo: "hash" };
-      history.pushState(stateObj, "hash", "#" + hash);
+      if(old_hash != hash && offset > top_offset - 1 && offset < previos_object_height) {
+        old_hash = hash;
+        previos_object_height = $(this).height();
+        anchors_panels_navigation_classes_fix(hash);
+        var stateObj = { foo: "hash" };
+        history.pushState(stateObj, "hash", "#" + hash);
+      }
     }
   });
   $('.panel-pane').appear({force_process: true});
@@ -46,10 +51,13 @@ $(document).ready(function() {
 			var hash = this.hash.substr(1);	
 			if($.inArray(hash, Drupal.settings.anchors_panels_navigation.hashes) !== -1){
 				event.preventDefault();
-				var destination = $("#" + hash).offset().top - top_offset;
-				$("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, 500, function() {
-					return false;
-				});
+        var $hashobj = $("#" + hash);
+        if ($hashobj.length) {
+          var destination = $hashobj.offset().top - top_offset;
+          $("html:not(:animated),body:not(:animated)").animate({ scrollTop: destination}, 500, function() {
+            return false;
+          });
+        }
 			}
 			return true;	
 		}

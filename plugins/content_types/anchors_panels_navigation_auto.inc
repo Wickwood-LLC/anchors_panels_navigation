@@ -38,6 +38,7 @@ function anchors_panels_navigation_auto_render($subtype, $conf, $args, $contexts
         $pane->type != 'anchors_panels_navigation_auto'
         && isset($pane->configuration['anchors_panels_navigation_anchor'])
         && !empty($pane->configuration['anchors_panels_navigation_anchor'])
+        && $pane->shown == TRUE
       ) {
         $anchor_title = $pane->configuration['anchors_panels_navigation_anchor'];
         $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);

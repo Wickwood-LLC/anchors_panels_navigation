@@ -18,10 +18,7 @@ function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
     // Generate a machine name based on the pane title.
     $anchor_title = $variables['pane']->configuration['anchors_panels_navigation_anchor'];
     $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);
-    if (!isset($variables['pane']->css['css_id'])) {
-      $variables['pane']->css['css_id'] = '';
-    }
-    $variables['pane']->css['css_id'] .= $anchor_name;
+    $variables['pane']->css['css_id'] = $anchor_name;
   }
 
   if (!empty($variables['pane']->css['css_id'])) {
@@ -188,35 +185,6 @@ function anchors_panels_navigation_requirements($phase) {
 function anchors_panels_navigation_ctools_plugin_directory($owner, $plugin_type) {
   if ($owner == 'ctools' && $plugin_type == 'content_types') {
     return 'plugins/' . $plugin_type;
-  }
-}
-
-/**
- * Inject anchors for panels that have been configured to do so.
- *
- * Implements hook_panels_pane_content_alter().
- *
- * @param $content
- * @param $pane
- * @param $args
- * @param $contexts
- */
-function anchors_panels_navigation_panels_pane_content_alter(&$content, $pane, $args, $contexts) {
-  if (
-    is_object($content)
-    && !empty($content->content)
-    && !empty($pane->configuration['anchors_panels_navigation_anchor'])
-  ) {
-    // Generate a machine name based on the pane title.
-    $anchor_title = $pane->configuration['anchors_panels_navigation_anchor'];
-    $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);
-    $anchor = '<a name="' . $anchor_name . '"></a>';
-
-    // Prepend the first existing markup item or add one if not present.
-    $inserted = _anchors_panels_navigation_insert_anchor($content->content, $anchor);
-    if (!$inserted) {
-      $content->content['#markup'] = $anchor;
-    }
   }
 }
 

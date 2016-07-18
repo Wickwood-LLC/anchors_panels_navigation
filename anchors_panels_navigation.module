@@ -19,6 +19,8 @@ function anchors_panels_navigation_preprocess_panels_pane(&$variables) {
     $anchor_title = $variables['pane']->configuration['anchors_panels_navigation_anchor'];
     $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);
     $variables['pane']->css['css_id'] = $anchor_name;
+    // set configuration flag so the menu block knows if it should generate a menu item
+    $variables['pane']->has_content = TRUE;
   }
 
   if (!empty($variables['pane']->css['css_id'])) {

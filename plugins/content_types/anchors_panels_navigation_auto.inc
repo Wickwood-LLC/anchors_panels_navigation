@@ -39,6 +39,8 @@ function anchors_panels_navigation_auto_render($subtype, $conf, $args, $contexts
         && isset($pane->configuration['anchors_panels_navigation_anchor'])
         && !empty($pane->configuration['anchors_panels_navigation_anchor'])
         && $pane->shown == TRUE
+        // and there is actually content as determined in the pane preprocessor
+        && $pane->has_content == TRUE
       ) {
         $anchor_title = $pane->configuration['anchors_panels_navigation_anchor'];
         $anchor_name = _anchors_panels_navigation_anchor_name($anchor_title);

@@ -7,7 +7,7 @@ $plugin = array(
   'render callback' => 'anchors_panels_navigation_auto_render',
   'all contexts' => TRUE,
   'icon' => 'icon_contrib_menu.png',
-  'category' => array(t('Menus')),
+  'category' => t('Menus'),
 );
 
 /**

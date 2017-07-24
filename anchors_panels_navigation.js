@@ -6,6 +6,7 @@
   $(document).ready(function () {
     var old_hash = window.location.hash.substr(1),
       top_offset = Drupal.settings.anchors_panels_navigation.top_offset,
+      menu_offset,
       previous_object_height = $(window).height(),
       page_url = window.location.href.split("#")[0],
       decoded_page_url = decodeURIComponent(page_url),
@@ -50,7 +51,15 @@
     if (hash) {
       var $panel_pane = $('#' + hash + '.panel-pane');
       if ($panel_pane.length) {
-        var destination = $panel_pane.offset().top - top_offset;
+
+        if ($("#admin-menu").length) {
+          menu_offset = $("#admin-menu").height();
+        }
+        if ($(".floating-menu").lenth) {
+          menu_offset = menu_offset + $(".floating-menu").height();
+        }
+
+        var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;
         $("html:not(:animated),body:not(:animated)").stop().animate({scrollTop: destination}, 500, function () {
           return false;
         });
@@ -105,7 +114,15 @@
             var $panel_pane = $('#' + hash + '.panel-pane');
             if ($panel_pane.length) {
               event.preventDefault();
-              var destination = $panel_pane.offset().top - top_offset;
+
+              if ($("#admin-menu").length) {
+                menu_offset = $("#admin-menu").height();
+              }
+              if ($(".floating-menu").lenth) {
+                menu_offset = menu_offset + $(".floating-menu").height();
+              }
+
+              var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;
               $("html:not(:animated),body:not(:animated)").stop().animate({scrollTop: destination}, 500, function () {
                 return false;
               });

@@ -55,7 +55,7 @@
         if ($("#admin-menu").length) {
           menu_offset = $("#admin-menu").height();
         }
-        if ($("#block-superfish-1").lenth) {
+        if ($("#block-superfish-1").length) {
           menu_offset = menu_offset + $("#block-superfish-1").height();
         }
 
@@ -118,7 +118,7 @@
               if ($("#admin-menu").length) {
                 menu_offset = $("#admin-menu").height();
               }
-              if ($("#block-superfish-1").lenth) {
+              if ($("#block-superfish-1").length) {
                 menu_offset = menu_offset + $("#block-superfish-1").height();
               }
 

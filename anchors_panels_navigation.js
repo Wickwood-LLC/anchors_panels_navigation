@@ -55,8 +55,8 @@
         if ($("#admin-menu").length) {
           menu_offset = $("#admin-menu").height();
         }
-        if ($(".floating-menu").lenth) {
-          menu_offset = menu_offset + $(".floating-menu").height();
+        if ($("#block-superfish-1").lenth) {
+          menu_offset = menu_offset + $("#block-superfish-1").height();
         }
 
         var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;
@@ -118,8 +118,8 @@
               if ($("#admin-menu").length) {
                 menu_offset = $("#admin-menu").height();
               }
-              if ($(".floating-menu").lenth) {
-                menu_offset = menu_offset + $(".floating-menu").height();
+              if ($("#block-superfish-1").lenth) {
+                menu_offset = menu_offset + $("#block-superfish-1").height();
               }
 
               var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;

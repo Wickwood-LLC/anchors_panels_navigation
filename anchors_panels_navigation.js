@@ -6,7 +6,7 @@
   $(document).ready(function () {
     var old_hash = window.location.hash.substr(1),
       top_offset = Drupal.settings.anchors_panels_navigation.top_offset,
-      menu_offset,
+      menu_offset = 0,
       previous_object_height = $(window).height(),
       page_url = window.location.href.split("#")[0],
       decoded_page_url = decodeURIComponent(page_url),
@@ -55,8 +55,8 @@
         if ($("#admin-menu").length) {
           menu_offset = $("#admin-menu").height();
         }
-        if ($("#block-superfish-1").length) {
-          menu_offset = menu_offset + $("#block-superfish-1").height();
+        if ($(".main-menu").length) {
+          menu_offset += $(".main-menu").height();
         }
 
         var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;
@@ -118,8 +118,8 @@
               if ($("#admin-menu").length) {
                 menu_offset = $("#admin-menu").height();
               }
-              if ($("#block-superfish-1").length) {
-                menu_offset = menu_offset + $("#block-superfish-1").height();
+              if ($(".main-menu").length) {
+                menu_offset += $(".main-menu").height();
               }
 
               var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;

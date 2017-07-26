@@ -55,8 +55,8 @@
         if ($("#admin-menu").length) {
           menu_offset = $("#admin-menu").height();
         }
-        if ($(".main-menu").length) {
-          menu_offset += $(".main-menu").height();
+        if ($(".apn-scroll-to-point").length) {
+          menu_offset += $(".apn-scroll-to-point").height();
         }
 
         var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;
@@ -118,8 +118,8 @@
               if ($("#admin-menu").length) {
                 menu_offset = $("#admin-menu").height();
               }
-              if ($(".main-menu").length) {
-                menu_offset += $(".main-menu").height();
+              if ($(".apn-scroll-to-point").length) {
+                menu_offset += $(".apn-scroll-to-point").height();
               }
 
               var destination = $panel_pane.offset().top - top_offset - menu_offset - 18;
